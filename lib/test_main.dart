@@ -1,4 +1,5 @@
 import 'dart:async';
+// import 'dart:io';
 
 import 'package:fl_location/fl_location.dart';
 import 'package:flutter/foundation.dart';
@@ -46,7 +47,7 @@ class _ExampleAppState extends State<ExampleApp> {
     if (await _checkAndRequestPermission()) {
       _locationSubscription = FlLocation.getLocationStream().listen((event) {
         _result = event.toJson().toString();
-        print("Location stream event : $_result");
+        print(_result);
         _refreshPage();
       });
 
@@ -58,6 +59,11 @@ class _ExampleAppState extends State<ExampleApp> {
   @override
   void initState() {
     super.initState();
+    if (!kIsWeb) {
+      FlLocation.getLocationServicesStatusStream().listen((event) {
+        print('location services status: $event');
+      });
+    }
   }
 
   @override
@@ -70,6 +76,9 @@ class _ExampleAppState extends State<ExampleApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
+        appBar: AppBar(
+          title: const Text('Plugin example app'),
+        ),
         body: Center(
           child: TextButton(
             onPressed: _listenLocationStream,
@@ -81,4 +90,34 @@ class _ExampleAppState extends State<ExampleApp> {
       ),
     );
   }
+
+  /*   final resultText =
+        Text(_result, style: Theme.of(context).textTheme.bodyText1);
+
+    return ListView(
+      padding: const EdgeInsets.symmetric(horizontal: 10.0),
+      children: [
+        buttonList,
+        const SizedBox(height: 10.0),
+        resultText,
+      ],
+    );
+  }
+
+  Widget _buildTestButton({
+    required String text,
+    required ButtonState state,
+    required VoidCallback? onPressed,
+  }) {
+    return ElevatedButton(
+      child: state == ButtonState.LOADING
+          ? SizedBox.fromSize(
+              size: const Size(20.0, 20.0),
+              child: const CircularProgressIndicator(strokeWidth: 2.0),
+            )
+          : Text(text),
+      onPressed: state == ButtonState.DONE ? onPressed : null,
+    );
+  }
+}*/
 }
